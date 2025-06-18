@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+</head>
+<body>
+    <h1>Welcome to my Chat App</h1>
+    <p>This is a simple chat application built with PHP and MySQL.</p>
+
+    <fieldset>
+        <legend>Signup</legend>
+        <form id="reg-form">
+            <input type="text" id="username" name="username" placeholder="Username" required>
+                <span id="error-username"></span><br><br>
+            <input type="email" id="email" name="email" placeholder="Email" required>
+                <span id="error-email"></span><br><br>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+                <span id="error-password"></span><br><br>
+            <input type="password" id="c-password" name="c-password" placeholder="Confirm Password" required minlength="8">
+                <span id="error-c-password"></span><br><br>
+            <button id="sign-up-btn" type="submit">Sign Up</button><br><br>
+        </form>
+        <a href="index.html">Login</a>
+    </fieldset>
+    <script src="script\register.js"></script>
+</body>
+</html>
