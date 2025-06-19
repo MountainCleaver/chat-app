@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         };
     }
 
-    signupBtn.addEventListener('click', (e) => {
+    signupBtn.addEventListener('click', async (e) => {
         e.preventDefault();
 
         if(errors.username || errors.email || errors.password || errors.cpassword){
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 email: email.value,
                 password: password.value
             }
-            registerUser(form);
+            await registerUser(form);
         }
         
 

@@ -5,7 +5,7 @@
 
     require_once '../../config/database.php';
 
-    $response = [
+    $response = [   
         'status' => false,
         'message' => '',
         'data' => null

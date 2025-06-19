@@ -8,7 +8,85 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const errLogin  = document.getElementById('error-login');
 
+    let error = '';
+
     
+
+    loginBtn.addEventListener('click', async () => {
+
+        if(!validateFields()){
+            errLogin.innerHTML = error;
+            return;
+        }
+
+        const trimmed_email = email.value.trim();
+        const trimmed_password = password.value.trim();
+
+        const user_creds = {
+            email: trimmed_email,
+            password: trimmed_password
+        }
+
+        await login(user_creds);
+        
+    });
+
+
+    async function login(creds){
+        try{
+            const url = 'apis/auth/login.php';
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(creds)
+            });
+
+            if(!response.ok){
+                throw new Error('There was an error with the request');
+            }
+
+            const data = await response.json();
+            console.log(data);
+
+            if(!data.status){
+                throw new Error(data.message);
+            }else{
+                error = `<p style="color:green">${data.message}</p>`;
+                errLogin.innerHTML = error;
+            }
+            //window.location.href = 'dashboard.html';
+        }catch(e){
+            console.error('Error:', e);
+            error = `<p style="color: red; display:inline;">${e.message}</p>`;
+            errLogin.innerHTML = error;
+        }
+    }
+
+    function validateFields(){
+        if((email.value.trim() === '' || email.value.trim().length === 0)|| (password.value.trim() === '' || password.value.trim().length === 0)){
+            error = `<p style="color: red; display:inline;">Email and Password cannot be empty.</p>`;
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+    
+
+    /* 
+    
+    1. accept email and password
+    2. validate email and password
+    3. if valid, send a POST request to the server
+    4. if successful, redirect to the dashboard
+    5. if error, display error message
+    6. if email or password is empty, display error message
+    
+    
+    */
 
 
 });
