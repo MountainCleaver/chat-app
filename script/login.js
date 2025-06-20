@@ -10,6 +10,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let error = '';
 
+    loginForm.addEventListener('keydown', async (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault(); 
+
+            if (!validateFields()) {
+                errLogin.innerHTML = error;
+                return;
+            }
+
+            const trimmed_email = email.value.trim();
+            const trimmed_password = password.value.trim();
+
+            const user_creds = {
+                email: trimmed_email,
+                password: trimmed_password
+            }
+
+            await login(user_creds);
+        }
+    });
+
+
     
 
     loginBtn.addEventListener('click', async () => {
