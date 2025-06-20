@@ -3,7 +3,7 @@
     header('Content-Type: application/json');
     header('Access-Control-Allow-Methods: POST');
 
-    require_once '../../config/database.php';
+    require_once 'database.php';
 
     $response = [
         'status'  => false,
@@ -20,9 +20,9 @@
         exit;
     }
 
-    if($_SERVER['REQUEST_METHOD'] ==- 'POST'){
+    if($_SERVER['REQUEST_METHOD'] === 'POST'){
         if(empty($_SESSION['user_id']) || empty($_SESSION['user_email']) || empty($_SESSION['user'])){
-            $response['message'] = 'user not logged in';
+            $response['message'] = 'You are not logged in';
             echo json_encode($response);
             exit;
         } else {
