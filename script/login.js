@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 error = `<p style="color:green">${data.message}</p>`;
                 errLogin.innerHTML = error;
             }
-            //window.location.href = 'dashboard.html';
+            window.location.href = 'home.html';
         }catch(e){
             console.error('Error:', e);
             error = `<p style="color: red; display:inline;">${e.message}</p>`;
