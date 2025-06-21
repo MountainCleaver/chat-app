@@ -1,8 +1,71 @@
 document.addEventListener('DOMContentLoaded', () => {
     checkSession();
 
-    const username  = document.getElementById('username');
-    const logoutBtn = document.getElementById('logout-btn');
+    var user_id = '';
+
+    const username    = document.getElementById('username');
+    const logoutBtn   = document.getElementById('logout-btn');
+    
+    const searchField = document.getElementById('search-field');
+    const searchResult= document.getElementById('search-result');
+
+    searchField.addEventListener('input', (e) => {
+        searchResult.innerHTML = '';
+        if(e.target.value.length === 0){
+            return;
+        }
+        debouncedSearch(e.target.value)
+    });
+
+    function debouncer(func, delay){
+        let timeoutId;
+        return (...args) => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(()=>{
+                func.apply(null, args);
+            }, delay);
+        };
+    }
+
+    const debouncedSearch = debouncer(searchUser, 500);
+    async function searchUser (q) {
+        try{
+            const url      = `apis/home/search.php?q=${encodeURIComponent(q)}&id=${user_id}`;
+
+            const response = await fetch(url, {
+                method  : 'GET',
+                headers : {'Content-Type':'application/json'}
+            });
+
+            if(!response.ok){
+                throw new Error('reponse not okay');
+            }
+
+            const data = await response.json();
+            console.log(data.data);
+            
+            if(data.data.length === 0){
+                searchResult.innerHTML = `<p>${data.message}</p>`;
+                return;
+            } else {
+                searchResult.innerHTML += data.data.map(row => {
+                    return `
+                        <p>${row.username}</p>
+                        <p>${row.email}</p>
+                        <hr>
+                    `;
+                }).join('');
+            }
+
+        }catch(e){
+            console.error(e.message);
+        }
+    }
+
+
+    /* AUTH RELATED AUTH RELATED AUTH RELATED AUTH RELATED AUTH RELATED AUTH RELATED */
+    /* AUTH RELATED AUTH RELATED AUTH RELATED AUTH RELATED AUTH RELATED AUTH RELATED */
+    /* AUTH RELATED AUTH RELATED AUTH RELATED AUTH RELATED AUTH RELATED AUTH RELATED */
     
     async function checkSession(){
         try{
@@ -27,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             username.textContent = data.message;
-
+            user_id = data.data.id
             console.log(data);
 
         }catch(e){
