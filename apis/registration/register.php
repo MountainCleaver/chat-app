@@ -13,9 +13,7 @@
 
     if(!$conn){
         http_response_code(500);
-        $response['status'] = 'error';
         $response['message'] = 'Database connection failed.';
-        $response['data'] = null;
         echo json_encode($response);
         exit;
     }
