@@ -10,6 +10,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let error = '';
 
+    (async () => {
+        
+        try{
+
+            const url = 'config/session.php';
+
+            const response = await fetch(url, {
+                method  : 'POST',
+                headers : {'Content-Type':'application/json'},
+                credentials : 'include'
+            });
+
+            if(!response.ok){
+                throw new Error('There was a problem getting your session data');
+            }
+
+            const data = await response.json();
+
+            if(data.status){
+                window.location.href = 'home.html'
+                throw new Error(data.message);
+            }
+
+            console.log(data);
+
+        }catch(e){
+            console.error('Error', e.message);
+        }
+    })();
+
     loginForm.addEventListener('keydown', async (e) => {
         if (e.key === "Enter") {
             e.preventDefault(); 
