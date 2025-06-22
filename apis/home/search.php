@@ -28,9 +28,14 @@
 
     $searchPattern = "$searchFor%";
 
-    $sql  = "SELECT * FROM users WHERE (username LIKE ? OR email LIKE ?) AND id != ?";
+    $sql  = "SELECT u.*, c.status AS contact_status
+                FROM users u
+                LEFT JOIN contact_rels c
+                    ON ((c.user_id = ? AND c.contact_id = u.id) OR (c.user_id = u.id AND c.contact_id = ?))
+                WHERE (u.username LIKE ? OR u.email LIKE ?)
+                AND u.id != ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param('ssi', $searchPattern, $searchPattern, $user_id);
+    $stmt->bind_param('iissi', $user_id,$user_id, $searchPattern, $searchPattern, $user_id);
 
     $stmt->execute();
     $res = $stmt->get_result();
@@ -47,3 +52,23 @@
         $response['message'] = 'user/s not found';
         echo json_encode($response);
     }
+
+
+    /* 
+
+        TODO:
+            1. after getting results, look at contact list
+            2. check if the user is in there, if not, search results must have 'add friend' button
+            3. if in there, check status, based on that, search result will have 'pending' or 'friend' status
+            
+
+            SELECT u.*, c.status AS contact_status
+            FROM users u
+            LEFT JOIN contact_rels c
+                ON ((c.user_id = ? AND c.contact_id = u.id) OR (c.user_id = u.id AND c.contact_id = ?))
+            WHERE (u.username LIKE ? OR u.email LIKE ?)
+            AND u.id != ?
+
+
+    
+    */
