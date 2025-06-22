@@ -1,3 +1,9 @@
+<!-- 
+    THIS API NEEDS FIXING
+
+    1. user try catch block appropriately, throw new error, do not use the else.
+-->
+
 <?php 
 
     header('Content-Type: application/json');
