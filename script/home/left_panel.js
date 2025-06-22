@@ -52,7 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     return `
                         <p>${row.username}</p>
                         <p>${row.email}</p>
-                        ${!row.contact_status ? `<button id='${row.id}'>Add friend</button>` : row.contact_status==='pending' ? `<p style="color:blue";>${row.contact_status}</p>` : '<p style="display:inline-block">Friends ✅</p> | <button>Message</button>'}
+                        ${!row.contact_status 
+                            ? `<button class="add-friend-btn" data-userid="${row.id}" id="user-${row.id}" >Add Friend</button>` 
+                            : row.contact_status==='pending' 
+                                ? `<button class="cancel-rqst-btn" data-userid="${row.id}" style="color:red;">Cancel Request</button>` 
+                                : `<p style="display:inline-block">Friends ✅</p> | <button class="message-btn" data-userid="${row.id}">Message</button>`
+                        }
                         <hr>
                     `;
                 }).join('');
@@ -61,6 +66,82 @@ document.addEventListener('DOMContentLoaded', () => {
         }catch(e){
             console.error(e.message);
         }
+    }
+
+
+    searchResult.addEventListener('click', async (e) => {
+
+        if(e.target.classList.contains('add-friend-btn')){
+            const targetId = e.target.dataset.userid;
+            console.log(`Add friend user ${targetId}`)
+            //add friend function
+            /* 
+                add this user to the contact_rel table
+             */
+
+            await addFriend(targetId);
+        }
+
+        if(e.target.classList.contains('cancel-rqst-btn')){
+            const targetId = e.target.dataset.userid;
+            console.log(`Cancel friend request for ${targetId}`)
+            //add friend function
+            /* 
+                delete this user from contact_rel relevant tothe current user
+             */
+        }
+
+        if(e.target.classList.contains('message-btn')){
+            const targetId = e.target.dataset.userid;
+            console.log(`Message ${targetId}`)
+            //message friend
+            /* 
+                chat
+             */
+        }
+
+    });
+
+    async function addFriend(id){
+
+        document.getElementById(`user-${id}`).textContent = 'Sending Request...';
+        try{
+            const url = `apis/home/contacts.php`
+
+            const response = await fetch(url, {
+                method : 'POST',
+                headers : {'Content-Type': 'application/json'},
+                body : JSON.stringify({
+                    user_id : id
+                })
+            });
+
+            if(!response.ok){
+                throw new Error('response not okay');
+            }
+
+            const data = await response.json();
+
+                document.getElementById(`user-${id}`).textContent = 'Cancel Request';
+                document.getElementById(`user-${id}`).style.color = 'red';
+                document.getElementById(`user-${id}`).classList.remove('add-friend-btn')
+                document.getElementById(`user-${id}`).classList.add('cancel-rqst-btn')
+                
+                
+
+            console.log(data);
+        }catch(e){
+            console.error("Error: ", e.message);
+            document.getElementById(`user-${id}`).textContent = 'Add Friend';
+        }
+    }
+
+    async function cancelRequest(){
+
+    }
+
+    function message(){
+
     }
 
 
