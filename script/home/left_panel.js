@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return `
                         <p>${row.username}</p>
                         <p>${row.email}</p>
+                        ${!row.contact_status ? `<button id='${row.id}'>Add friend</button>` : row.contact_status==='pending' ? `<p style="color:blue";>${row.contact_status}</p>` : '<p style="display:inline-block">Friends ✅</p> | <button>Message</button>'}
                         <hr>
                     `;
                 }).join('');
