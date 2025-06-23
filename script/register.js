@@ -20,9 +20,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     };
 
     username.addEventListener('input', (e)=>{
-        if(e.target.value.length <3){
-            return;
-        }
         debouncedValidateUsername(e.target.value);  
         
     });
@@ -91,7 +88,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
             });
 
             if(!response.ok){
-                throw new Errpr('There was an error with the request');
+                throw new Error('There was an error with the request');
             }
 
             const data = await response.json();
@@ -114,8 +111,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
             }else{
                 alert('There was an error with the registration. Please try again.');
             }
+
         }catch(e){
-            console.error('Error:', es);
+            console.error('Error:', e.message);
         }
     }
     
