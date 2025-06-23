@@ -28,12 +28,24 @@
 
     $searchPattern = "$searchFor%";
 
-    $sql  = "SELECT u.*, c.status AS contact_status
+    $sql = "SELECT
+                u.id,
+                u.username, 
+                u.email, 
+                    c.status AS contact_status,             #status of relationship
+                    c.user_id AS contact_user_id,           #id of -> sent friend request
+                    c.contact_id AS contact_contact_id      #if of -> accepts friend request
                 FROM users u
                 LEFT JOIN contact_rels c
-                    ON ((c.user_id = ? AND c.contact_id = u.id) OR (c.user_id = u.id AND c.contact_id = ?))
-                WHERE (u.username LIKE ? OR u.email LIKE ?)
-                AND u.id != ?";
+                    ON 
+                        (
+                            (c.user_id = ? AND c.contact_id = u.id) 
+                        OR (c.user_id = u.id AND c.contact_id = ?)
+                        )
+                WHERE 
+                    (u.username LIKE ? OR u.email LIKE ?) AND u.id != ?";
+
+
     $stmt = $conn->prepare($sql);
     $stmt->bind_param('iissi', $user_id,$user_id, $searchPattern, $searchPattern, $user_id);
 
@@ -44,6 +56,16 @@
         $response['status'] = true;
         $response['message'] = 'user/s found';
         while($row = $res->fetch_assoc()){
+
+            if($row['contact_status'] === 'pending'){
+                $row['request_sender'] = '';
+                if((int)$user_id === (int)$row['contact_user_id']){
+                    $row['request_sender'] = 'current_user';
+                }else{
+                    $row['request_sender'] = 'other_user';
+                }
+            }
+
             $response['data'][] = $row;
         }
 
@@ -52,23 +74,3 @@
         $response['message'] = 'user/s not found';
         echo json_encode($response);
     }
-
-
-    /* 
-
-        TODO:
-            1. after getting results, look at contact list
-            2. check if the user is in there, if not, search results must have 'add friend' button
-            3. if in there, check status, based on that, search result will have 'pending' or 'friend' status
-            
-
-            SELECT u.*, c.status AS contact_status
-            FROM users u
-            LEFT JOIN contact_rels c
-                ON ((c.user_id = ? AND c.contact_id = u.id) OR (c.user_id = u.id AND c.contact_id = ?))
-            WHERE (u.username LIKE ? OR u.email LIKE ?)
-            AND u.id != ?
-
-
-    
-    */
