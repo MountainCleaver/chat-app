@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     checkSession();
 
-    var user_id = '';
+    var user_id = null;
+    console.log(user_id);
 
     const username    = document.getElementById('username');
     const logoutBtn   = document.getElementById('logout-btn');
@@ -32,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const debouncedSearch = debouncer(searchUser, 500);
     async function searchUser (q) {
         try{
-            const url      = `apis/home/search.php?q=${encodeURIComponent(q)}&id=${user_id}`;
+            const url      = `apis/home/search.php?q=${encodeURIComponent(q)}`;
 
             const response = await fetch(url, {
                 method  : 'GET',
@@ -114,13 +115,16 @@ document.addEventListener('DOMContentLoaded', () => {
              */
         }
 
-        else if(e.target.classList.contains('accept-rqst-btn')){
+        else if(e.target.classList.contains('accept-rqst-btn')){//ACCEPT REQUEST
+            isLoading = true;
             const targetId = e.target.dataset.userid;
             console.log(`Accept friend request ${targetId}`)
             //accept friend request
             /* 
                 change targeted status to 'accepted'
              */
+            await acceptRequest(e.target, targetId);
+            isLoading = false;
         }
 
     });
@@ -136,7 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers : {'Content-Type': 'application/json'},
                 body : JSON.stringify({
                     user_id : id
-                })
+                }),
+                credentials: 'include'
             });
 
             if(!response.ok){
@@ -154,24 +159,23 @@ document.addEventListener('DOMContentLoaded', () => {
             button.classList.remove('add-friend-btn')
             button.classList.add('cancel-rqst-btn')
                 
-                
-
             console.log(data);
         }catch(e){
             console.error("Error: ", e.message);
-            button.textContent = 'Add Friend';
-            button.style.color = 'black';
-            button.classList.remove('cancel-rqst-btn')
-            button.classList.add('add-friend-btn')
 
             if(e.message === 'Friend request already exists.'){
                 alert('This user already added you, please accept their request')
                 button.textContent = 'Accept Request';
                 button.style.color = 'blue';
-                button.classList.remove('add-friend-btn')
-                button.classList.add('accept-rqst-btn')
-                //call accept function
+                button.classList.remove('add-friend-btn');
+                button.classList.add('accept-rqst-btn');
+                return;
             }
+            
+            button.textContent = 'Add Friend';
+            button.style.color = 'black';
+            button.classList.remove('cancel-rqst-btn')
+            button.classList.add('add-friend-btn')
         }
     }
 
@@ -214,8 +218,54 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function acceptRequest(){
+    async function acceptRequest(button, id){
+        button.textContent = 'Accepting Request...'
+        try{
+            const url = `apis/home/contacts.php`;
 
+            const response = await fetch(url, {
+                method  : 'PATCH',
+                headers : {'Content-Type':'application/json'},
+                body    : JSON.stringify({
+                    user_id : id
+                }),
+            });
+
+            if(!response.ok){
+                throw new Error('Response not okay');
+            }
+
+            const data = await response.json();
+            console.log(data);
+
+            if(!data.status){
+                throw new Error(data.message);
+            }
+
+            button.textContent = 'message';
+            button.style.color = 'black';
+            button.classList.add('message-btn');
+            button.classList.remove('accept-rqst-btn');
+
+            console.log(data);
+
+        }catch(e){
+            console.error(e.message);
+
+            if(e.message === 'Friend Request is Cancelled by the sender'){
+                button.textContent = 'Add Friend';
+                button.style.color = 'black';
+                button.classList.remove('accept-rqst-btn');
+                button.classList.add('add-friend-btn');
+                return;
+            }
+
+            button.textContent = 'Accept Request';
+            button.style.color = 'blue';
+            button.classList.remove('add-friend-btn')
+            button.classList.add('accept-rqst-btn')
+            
+        }
     }
 
     function message(){
@@ -250,8 +300,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             username.textContent = data.message;
-            user_id = data.data.id
-            console.log(data);
+            user_id = Number(data.data.id);
+            console.log(data.data);
+
 
         }catch(e){
             console.error('Error', e.message);
@@ -286,5 +337,5 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('You are not logged out');
         }
     });
-
+    
 });

@@ -1,6 +1,6 @@
 <?php 
     header('Content-Type: application/json');
-    header('Access-Control-Allow-Methods: POST, GET, PUT, DELETE');
+    header('Access-Control-Allow-Methods: POST, GET, PUT, PATCH, DELETE');
     header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
 
     if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -32,9 +32,10 @@
         case 'DELETE':
             deleteRequest($conn);
             break;
+        case 'PATCH':
+            acceptRequest($conn);
+            break;
     }
-
-
 
 function addContact($conn) {
 
@@ -89,7 +90,7 @@ function addContact($conn) {
             echo json_encode($response);
             exit;
         } else {
-            http_response_code(500);
+            //http_response_code(500);
             $response['status'] = false;
             $response['message'] = 'Database error: ' . $e->getMessage();
             echo json_encode($response);
@@ -156,12 +157,61 @@ function deleteRequest($conn){
     }
 }
 
+function acceptRequest($conn){
+    
+    global $response;
 
-    /* 
-        in this api, i can
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-        C - create row when user adds another
-        r - read contact-relation list
-        u - update if the contact-relation status is accepted or pending
-        d - if user reject request
-    */
+    try{
+        $raw_data = file_get_contents('php://input');
+        $data = json_decode($raw_data, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception('Invalid JSON data received.');
+        }
+
+        if (!isset($_SESSION['user_id'])) {
+            throw new Exception('User not authenticated.');
+        }
+
+        if (!isset($data['user_id'])) {
+            throw new Exception('No target user provided.');
+        }
+
+        $current_user_id = $_SESSION['user_id']; // Current logged-in user
+        $target_user_id = $data['user_id']; // User to be added as friend
+
+        $new_status = 'accepted';
+
+        $sql = "UPDATE contact_rels SET status = ? WHERE (user_id = ? AND contact_id = ?) OR (user_id = ? AND contact_id = ?);";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('siiii', $new_status, $current_user_id, $target_user_id, $target_user_id, $current_user_id);
+        $execute = $stmt->execute();
+
+        if ($stmt->affected_rows === 0) {
+            throw new Exception('No friend request was updated. It may not exist.');
+        }
+
+        $contactSql = 'SELECT status AS contact_status, contact_id FROM contact_rels WHERE (user_id = ? AND contact_id = ?) OR (user_id = ? AND contact_id = ?)';
+        $contactStmt = $conn->prepare($contactSql);
+        $contactStmt->bind_param('iiii', $current_user_id, $target_user_id , $target_user_id, $current_user_id);
+        $contactStmt->execute();
+        $result = $contactStmt->get_result();
+
+        if ($result && $result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $response['status'] = true;
+            $response['message'] = 'Friend request Accepted.';
+            $response['data'] = $row;
+        } else {
+            throw new Exception('Friend request not found after insertion.');
+        }
+
+        echo json_encode($response);
+    }catch(Exception $e){
+        $response['status'] = false;
+        $response['message'] = $e->getMessage();
+        echo json_encode($response);
+    }
+}

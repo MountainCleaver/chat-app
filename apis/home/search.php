@@ -23,7 +23,7 @@
 
     if(isset($_GET['q'])){
         $searchFor = $_GET['q'];
-        $user_id = $_GET['id'];
+        $user_id = $_SESSION['user_id'];
     }
 
     $searchPattern = "$searchFor%";
