@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     checkSession();
+    getContacts();
 
     var user_id = null;
     console.log(user_id);
@@ -10,7 +11,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchField = document.getElementById('search-field');
     const searchResult= document.getElementById('search-result');
 
+    const contacts    = document.getElementById('contacts-list');
+
     let isLoading = false;
+
+    async function getContacts () {
+        
+        try{
+            const url = "apis/home/contacts.php";
+            const response = await fetch(url);
+            const data = await response.json();
+            console.log(data);
+            contacts.innerHTML = data.friends.map(friend => {
+                return `
+                    <li id="${friend.id}">
+                        <p>${friend.username}</p>
+                        <p>${friend.email}</p>
+                        <button class="message-btn">Message</button>
+                        <hr>
+                    </li>
+                `;
+            }).join('');
+        }catch(e){
+
+        }
+
+    }
+
+
+    /* THINGS RELATED TO SEARCHING THINGS RELATED TO SEARCHING THINGS RELATED TO SEARCHING THINGS RELATED TO SEARCHING THINGS RELATED TO SEARCHING THINGS RELATED TO SEARCHING*/
+    /* THINGS RELATED TO SEARCHING THINGS RELATED TO SEARCHING THINGS RELATED TO SEARCHING THINGS RELATED TO SEARCHING THINGS RELATED TO SEARCHING THINGS RELATED TO SEARCHING*/
 
     searchField.addEventListener('input', (e) => {
         searchResult.innerHTML = '';
@@ -128,6 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
     });
+
+    /* CONTACT INTERACTIONS CONTACT INTERACTIONS CONTACT INTERACTIONS CONTACT INTERACTIONS CONTACT INTERACTIONS CONTACT INTERACTIONS CONTACT INTERACTIONS CONTACT INTERACTIONS CONTACT INTERACTIONS CONTACT INTERACTIONS  */
+    /* CONTACT INTERACTIONS CONTACT INTERACTIONS CONTACT INTERACTIONS CONTACT INTERACTIONS CONTACT INTERACTIONS CONTACT INTERACTIONS CONTACT INTERACTIONS CONTACT INTERACTIONS CONTACT INTERACTIONS CONTACT INTERACTIONS  */
 
     async function addFriend(button, id){
 
@@ -248,6 +281,8 @@ document.addEventListener('DOMContentLoaded', () => {
             button.classList.remove('accept-rqst-btn');
 
             console.log(data);
+
+            await getContacts();
 
         }catch(e){
             console.error(e.message);
