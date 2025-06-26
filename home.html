@@ -24,17 +24,25 @@
 
     <div class="chat panel">
         <p id="contact-name"></p>
-        <div class="chat-log"></div>
-        <div class="div">
-            <input type="text" name="chat" id="chat">
+        <hr>
+        <p id="contact-email"></p>
+        <div class="chat-log" id="chat-log" style="border: 1px solid black; height: 500px; margin-block: 1rem;"></div>
+        <div class="div" style="display: flex; justify-content: space-between;">
+            <input style="width: 90%;" type="text" name="chat" id="chat">
             <button type="button">Send</button>
         </div>
     </div>
 
     <div class="right panel">
+        <p>Profile</p>
+        <hr>
+        <p>Username: <span id="username-profile"></span></p>
+        <p>Email: <span id="email-profile"></span></p>
         <button id="logout-btn" type="button">Logout</button>
     </div>
 
+    <script src="script/home/chat_panel.js"></script>
     <script src="script/home/left_panel.js"></script>
+    <script src="script/home/right_panel.js"></script>
 </body>
 </html>
