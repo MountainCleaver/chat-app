@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(user_id);
 
     const username    = document.getElementById('username');
-    const logoutBtn   = document.getElementById('logout-btn');
     
     const searchField = document.getElementById('search-field');
     const searchResult= document.getElementById('search-result');
@@ -14,28 +13,72 @@ document.addEventListener('DOMContentLoaded', () => {
     const contacts    = document.getElementById('contacts-list');
 
     let isLoading = false;
+    let messageLoading = false;
+
+    async function messageContact(id){
+        
+        try{
+            const url = 'apis/home/set_contact.php';
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                credentials: 'include', // 🔑 Required for session-based APIs
+                body: JSON.stringify({
+                    'user_id': id
+                })
+            });
+
+            if(!response.ok){
+                throw new Error('Reponse not okay');
+            }
+
+            const data = await response.json();
+            console.log(data);
+
+            toMessageChangedEvent();
+            
+        }catch(e){
+            console.error('Error ', e.message);
+        }
+
+    }
+
+    function toMessageChangedEvent(){
+        const event = new CustomEvent('toMessageChanged');
+        window.dispatchEvent(event);
+    }
 
     async function getContacts () {
         
         try{
             const url = "apis/home/contacts.php";
             const response = await fetch(url);
+
+            if(!response.ok){
+                throw new Error('Reponse not okay');
+            }
             const data = await response.json();
+
             console.log(data);
             contacts.innerHTML = data.friends.map(friend => {
                 return `
                     <li id="${friend.id}">
-                        <p>${friend.username}</p>
+                        <p>${friend.username.charAt(0).toUpperCase() + friend.username.slice(1)}</p>
                         <p>${friend.email}</p>
-                        <button class="message-btn">Message</button>
+                        <div style="display:flex; justify-content:space-between;">
+                            <button class="unfriend-btn" data-userid="${friend.id}" style="font-size:0.7rem;">Unfriend ❌</button>
+                            <button class="message-btn" data-userid="${friend.id}" data-username="${friend.username}">Message ➡</button>
+                        </div>
                         <hr>
                     </li>
                 `;
-            }).join('');
+}).join('');
+
         }catch(e){
-
+            console.log('Error: ', e.message);
+            contacts.innerHTML = `<p>There was an error fetching your friends</p>`;
         }
-
     }
 
 
@@ -136,13 +179,16 @@ document.addEventListener('DOMContentLoaded', () => {
             isLoading = false;
         }
 
-        else if(e.target.classList.contains('message-btn')){
+        else if(e.target.classList.contains('message-btn')){//MESSAGE
+            isLoading = true;
             const targetId = e.target.dataset.userid;
             console.log(`Message ${targetId}`)
             //message friend
             /* 
                 chat
              */
+            await messageContact(targetId);
+            isLoading = false;
         }
 
         else if(e.target.classList.contains('accept-rqst-btn')){//ACCEPT REQUEST
@@ -155,6 +201,30 @@ document.addEventListener('DOMContentLoaded', () => {
              */
             await acceptRequest(e.target, targetId);
             isLoading = false;
+        }
+
+    });
+
+    contacts.addEventListener('click', async (e) => {
+
+
+        if(messageLoading){
+            return;
+        }
+
+        if(e.target.classList.contains('message-btn')){
+            messageLoading = true;
+            e.target.textContent = "Loading...";
+
+            const targetId = e.target.dataset.userid;
+
+            await messageContact(targetId);
+
+
+            messageLoading = false;
+            e.target.textContent = "Message ➡";
+        }else if (e.target.classList.contains('unfriend-btn')){
+            console.log(`Unfriend : ${e.target.dataset.userid}`);
         }
 
     });
@@ -344,33 +414,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function logoutUser(){
-        try{
-            const url = 'apis/auth/logout.php';
-
-            const response = await fetch(url, {
-                method : 'POST',
-                credentials: 'include'
-            });
-
-            if(!response.ok){
-                throw new Error('Failed to log you out');
-            }
-
-            window.location.href = 'index.html';
-            
-        }catch(e){
-            console.error('Error', e.message);
-        }
-    }
-
-    logoutBtn.addEventListener('click', () => {
-        if (confirm("Confirm logout") == true) {
-            alert('You logged out');
-            logoutUser();
-        } else {
-            alert('You are not logged out');
-        }
-    });
-    
 });
