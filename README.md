@@ -1,9 +1,7 @@
 ﻿# Basic Chat App
 
-This is a basic Chat App.
+This is a basic Chat App I used to learn node.js and websocket.
 
-It is still under developmnent.
+It uses `ws` websocket library.
 
-I will use this app for learning web sockets using `php`.
-
-If you want, you can put styles. Just clone or download it.
+Chat mechanism is working, that part is vibecoded because I tried if websockets will fit in my codebase.
