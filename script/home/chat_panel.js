@@ -4,7 +4,7 @@ let toUserId = null;
 let chatroomId = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-    await initializeUser(); // fetch session info
+    await initializeUser();
     await toMessage();
 });
 
@@ -21,16 +21,14 @@ async function initializeUser() {
     const json = await res.json();
     currentUserId = json.data.id;
 
-    if (!currentUserId) {
-        throw new Error("Session user not found.");
-    }
+    if (!currentUserId) throw new Error("Session user not found.");
 
-    // Establish WebSocket after confirming user ID
     ws = new WebSocket("ws://localhost:3000");
 
     ws.addEventListener('open', () => {
         ws.send(JSON.stringify({ type: "init", userId: currentUserId }));
         console.log("WebSocket connection opened");
+        //document.getElementById('ws-status').innerHTML = `<div style="width:100vw; background-color:green; color:#fff;z-index:999; position:fixed; top:0; text-align:center;">Connection Opened</div>`;
     });
 
     ws.addEventListener('message', (event) => {
@@ -42,6 +40,7 @@ async function initializeUser() {
 
     ws.addEventListener('close', () => {
         console.log('WebSocket closed');
+        document.getElementById('ws-status').innerHTML = `<div style="width:100vw; background-color:red; color:#fff;z-index:999; position:fixed; top:0; text-align:center;">Connection closed</div>`;
     });
 }
 
@@ -50,6 +49,25 @@ const contact_email = document.getElementById('contact-email');
 const message_input = document.getElementById('chat');
 const send_button = document.getElementById('send-btn');
 const chat_space = document.getElementById('chat-log');
+
+message_input.addEventListener('keydown', e => {
+    if(e.key === 'Enter'){
+        e.preventDefault();
+        const msg = message_input.value.trim();
+        if (!msg || !ws || ws.readyState !== WebSocket.OPEN) return;
+
+        ws.send(JSON.stringify({
+            type: 'send_message',
+            sender: currentUserId,
+            receiver: toUserId,
+            chatroom_id: chatroomId,
+            message: msg
+        }));
+
+        displayMessage({ message: msg }, 'outgoing');
+        message_input.value = '';
+    }
+});
 
 send_button.addEventListener('click', () => {
     const msg = message_input.value.trim();
@@ -67,24 +85,6 @@ send_button.addEventListener('click', () => {
     message_input.value = '';
 });
 
-message_input.addEventListener('keydown', (e) => {
-    if(e.key === 'Enter'){
-        const msg = message_input.value.trim();
-        if (!msg || !ws || ws.readyState !== WebSocket.OPEN) return;
-
-        ws.send(JSON.stringify({
-            type: 'send_message',
-            sender: currentUserId,
-            receiver: toUserId,
-            chatroom_id: chatroomId,
-            message: msg
-        }));
-
-        displayMessage({ message: msg }, 'outgoing');
-        message_input.value = '';
-    }
-});
-
 async function toMessage() {
     try {
         const url_contact = 'apis/home/message.php';
@@ -94,15 +94,11 @@ async function toMessage() {
             credentials: 'include'
         });
 
-        if (!response_to_message.ok) {
-            throw new Error('Response not okay with getting contact to message');
-        }
+        if (!response_to_message.ok) throw new Error('Could not get contact');
 
         const data_to_message = await response_to_message.json();
 
-        if (!data_to_message.data) {
-            throw new Error('Add a Contact or Select a contact to start messaging');
-        }
+        if (!data_to_message.data) throw new Error('No contact selected.');
 
         const contact_username = data_to_message.data.username;
         const contact_email_address = data_to_message.data.email;
@@ -114,7 +110,13 @@ async function toMessage() {
         contact_email.textContent = contact_email_address;
         chat_space.innerHTML = ``;
 
-        // 🆕 Get previous messages
+        // 🆕 Notify backend which chatroom user is now viewing
+        ws?.send(JSON.stringify({
+            type: 'chatroom_change',
+            userId: currentUserId,
+            chatroomId: chatroomId
+        }));
+
         await fetchAndRenderMessages(chatroomId);
 
     } catch (e) {
@@ -125,7 +127,6 @@ async function toMessage() {
     }
 }
 
-
 function displayMessage(msg, type) {
     const bubble = document.createElement('div');
     bubble.className = type === 'incoming' ? 'incoming-msg' : 'outgoing-msg';
@@ -133,7 +134,6 @@ function displayMessage(msg, type) {
     chat_space.appendChild(bubble);
     chat_space.scrollTop = chat_space.scrollHeight;
 }
-
 
 async function fetchAndRenderMessages(chatroomId) {
     try {
@@ -148,7 +148,7 @@ async function fetchAndRenderMessages(chatroomId) {
         const json = await res.json();
         if (!json.status) throw new Error(json.message);
 
-        chat_space.innerHTML = ''; // clear before render
+        chat_space.innerHTML = ''; // Clear
 
         json.data.forEach(msg => {
             const type = msg.sender === currentUserId ? 'outgoing' : 'incoming';

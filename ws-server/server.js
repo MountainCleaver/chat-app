@@ -1,4 +1,3 @@
-// server.js
 import http from 'http';
 import { WebSocketServer } from 'ws';
 import setupWebSocket from './websocket.js';

@@ -7,7 +7,7 @@ body {
     padding: 2rem;
     flex: 1; /* This makes each panel take equal space */
     border: 1px solid black;
-    height: 100vh;
+    
 }
 .outgoing-msg, .incoming-msg {
     display: inline-block;
