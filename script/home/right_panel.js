@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (confirm("Confirm logout") == true) {
             alert('You logged out');
             logoutUser();
+            websocket.close();
         } else {
             alert('You are not logged out');
         }
