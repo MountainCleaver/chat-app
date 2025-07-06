@@ -3,12 +3,13 @@
     header('Access-Control-Allow-Method: POST');
     header('Access-Control-Allow-Headers: Content-Type');
 
-    require_once '../../config/database.php';
+    require_once '../../config/database.php'; //session is here
 
     $response = [   
         'status' => false,
         'message' => '',
-        'to_message' => null
+        'to_message' => null,
+        'chatroom_id' => null
     ];
 
     try {
@@ -20,8 +21,25 @@
         }
 
         $target_user_id = (int)$data['user_id'];
+        $current_user = $_SESSION['user_id'];
 
         $_SESSION['to_message'] = $target_user_id;
+
+        $chatroom_sql = "SELECT id FROM contact_rels 
+                    WHERE (user_id = ? AND contact_id = ?) 
+                    OR (user_id = ? AND contact_id = ?) 
+                    LIMIT 1";
+        $chatroom_stmt = $conn->prepare($chatroom_sql);
+        $chatroom_stmt->bind_param('iiii', $current_user, $target_user_id, $target_user_id, $current_user);
+        $chatroom_stmt->execute();
+        $chatroom_res = $chatroom_stmt->get_result();
+        $chatroom = $chatroom_res->fetch_assoc();
+
+        if ($chatroom) {
+            $response['chatroom_id'] = $chatroom['id'];
+        } else {
+            $response['chatroom_id'] = null;
+        }        
 
         $response['status'] = true;
         $response['message'] = 'Target user set successfully.';
