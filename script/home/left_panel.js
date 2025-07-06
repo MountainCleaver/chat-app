@@ -1,9 +1,6 @@
-document.addEventListener('DOMContentLoaded', () => {
-    checkSession();
-    getContacts();
+document.addEventListener('DOMContentLoaded', async () => {
 
     var user_id = null;
-    console.log(user_id);
 
     const username    = document.getElementById('username');
     
@@ -15,6 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let isLoading = false;
     let messageLoading = false;
 
+    await checkSession();
+    await getContacts();
+
     async function messageContact(id){
         
         try{
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                credentials: 'include', // 🔑 Required for session-based APIs
+                credentials: 'include',
                 body: JSON.stringify({
                     'user_id': id
                 })
@@ -34,14 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const data = await response.json();
-            console.log(data);
 
             toMessageChangedEvent();
             
         }catch(e){
             console.error('Error ', e.message);
         }
-
     }
 
     function toMessageChangedEvent(){
@@ -61,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             console.log(data);
+            await messageContact(data.friends[0].id);
             contacts.innerHTML = data.friends.map(friend => {
                 return `
                     <li id="${friend.id}">
@@ -407,7 +406,6 @@ document.addEventListener('DOMContentLoaded', () => {
             username.textContent = data.message;
             user_id = Number(data.data.id);
             console.log(data.data);
-
 
         }catch(e){
             console.error('Error', e.message);
