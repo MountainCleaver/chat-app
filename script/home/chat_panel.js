@@ -1,17 +1,25 @@
-document.addEventListener('DOMContentLoaded', async () => {
+/* document.addEventListener('DOMContentLoaded', async () => {
     await toMessage();
-});
+}); */
 
 window.addEventListener('toMessageChanged', async () => {
     await toMessage();
 });
 
+const websocket = new WebSocket('ws://localhost:9000');
+
+let chat_session = null;
+
+websocket.addEventListener('open', () => {
+    console.log('connected to web soket');
+});
+
 const contact_name = document.getElementById('contact-name');
 const contact_email = document.getElementById('contact-email');
 
-const chat_space = document.getElementById('chat-log')
+const chat_space = document.getElementById('chat-log');
 
-async function toMessage () {
+async function toMessage () {//sets the messaging UI, or : adds username, email, and messages to the chat panel
         try{
             const url_contact = 'apis/home/message.php'
             const response_to_message = await fetch(url_contact, {
@@ -41,6 +49,14 @@ async function toMessage () {
             chat_space.innerHTML = ``;
 
             console.log(data_to_message);
+            chat_session = setValuesForWebsocket(
+                data_to_message.current_user_id, 
+                data_to_message.data.id, 
+                data_to_message.data.chatroom_id);
+
+            if (websocket.readyState === WebSocket.OPEN && chat_session !== null){
+                websocket.send(JSON.stringify(chat_session));
+            }
         }catch(e){
             contact_name.textContent = "Contact Username will appear here";
             contact_email.textContent = "Contact Email will appear here";
@@ -48,3 +64,12 @@ async function toMessage () {
             console.error(`Error: ${e}`);
         }
     }
+
+function setValuesForWebsocket(currentuserID, targetuserID, chatroomID){
+
+    return {
+        userID: currentuserID,
+        'opened-chatroom': targetuserID,
+        'to-message' : chatroomID
+    };
+}
