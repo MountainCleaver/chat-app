@@ -242,7 +242,7 @@ function getFriends($conn){
                         END
             WHERE cr.status = 'accepted'
             AND (? IN (cr.user_id, cr.contact_id))
-            ORDER BY cr.last_interaction DESC;;";
+            ORDER BY cr.last_interaction DESC;";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param('ii', $current_user_id, $current_user_id);
         if (!$stmt) {
