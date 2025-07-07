@@ -44,8 +44,15 @@ wss.on('connection', (ws) => {
                 toMessage : user['to-message']
             });
 
+            
             console.log(`User ${user.userID} added to chatrooms temp data / open chatrooms`);
             console.log([...chatrooms]);
+
+            ws.send(JSON.stringify({
+                type: 'ready',
+                message: 'can send message'
+            }));
+
         }catch(e){
             console.error(`Invalid JSON received:`, e.message);
         }
@@ -65,7 +72,7 @@ wss.on('connection', (ws) => {
     });
 });
 
-server.listen(PORT, (err) => {
+server.listen(PORT,'0.0.0.0', (err) => {
     if (err) throw err;
     console.log(`Connected to port ${PORT}`);
 });
