@@ -1,5 +1,10 @@
 document.addEventListener('DOMContentLoaded', async () => {
 
+    window.addEventListener('newInteraction', async () => {
+        console.log('new interaction')
+        await getContacts();
+    });
+
     var user_id = null;
 
     const username    = document.getElementById('username');
