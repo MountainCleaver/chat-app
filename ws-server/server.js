@@ -5,14 +5,6 @@ const PORT = 9000;
 
 const chatrooms = new Map();
 
-//populate with user data
-//like this:
-/* {
-    userID : id,
-    opened-chatroom: id,
-    to-message: contact-id
-} */
-
 const server = http.createServer((req, res) => {
     if(req.method === 'GET'){
         console.log(`${req.method} method received`);
@@ -31,27 +23,57 @@ wss.on('connection', (ws) => {
         try{
             const user = JSON.parse(data);
 
-            if(!user.userID){
-                console.warn('Missing userID in message');
-                return;
+            console.log(user);
+
+            switch(user.type){
+                case 'set_chatroom':
+                    if(!user.userID){
+                        console.warn('Missing userID in message');
+                        return;
+                    }
+
+                    ws_user = user.userID;
+
+                    chatrooms.set(user.userID, {
+                        socket: ws,
+                        openedChatRoom: user['opened-chatroom'],
+                        toMessage : user['to-message']
+                    });
+
+                    
+                    console.log(`User ${user.userID} added to chatrooms temp data / open chatrooms`);
+                    console.log([...chatrooms]);
+
+                    ws.send(JSON.stringify({
+                        type: 'ready',
+                        message: 'can send message'
+                    }));
+                    break;
+
+                case 'sent_message':
+                    if(!user.userID){
+                        console.warn('Missing userID in message');
+                        return;
+                    }
+
+                    console.log(`${ws_user} sent a message to ${user.receiver} on chatroom ${user.chatroomID}`);
+
+                    //find user.receiver in users listed in chatrooms. user.receiver === chatrooms.id
+                    const targetUser = chatrooms.get(user.receiver);
+
+                    if(!targetUser){
+                        console.warn('There is no target user');
+                    }
+
+                    targetUser.socket.send(JSON.stringify({
+                        type: 'received_message',
+                        chatroomID: user.chatroomID,
+                        from: user.userID,
+                        message: user.message
+                    }));
+
+                    break;
             }
-
-            ws_user = user.userID;
-
-            chatrooms.set(user.userID, {
-                socket: ws,
-                openedChatRoom: user['opened-chatroom'],
-                toMessage : user['to-message']
-            });
-
-            
-            console.log(`User ${user.userID} added to chatrooms temp data / open chatrooms`);
-            console.log([...chatrooms]);
-
-            ws.send(JSON.stringify({
-                type: 'ready',
-                message: 'can send message'
-            }));
 
         }catch(e){
             console.error(`Invalid JSON received:`, e.message);
