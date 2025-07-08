@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', async () => {
-
-    window.addEventListener('newInteraction', async () => {
-        console.log('new interaction')
-        await getContacts();
+    
+    window.addEventListener('newInteraction', async (e) => {
+        console.log('new interaction');
+        await getContacts(e.detail.contact);
     });
 
     var user_id = null;
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.dispatchEvent(event);
     }
 
-    async function getContacts () {
+    async function getContacts (contact) {
         
         try{
             const url = "apis/home/contacts.php";
@@ -64,10 +64,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             const data = await response.json();
 
             console.log(data);
-            await messageContact(data.friends[0].id);
+            //await messageContact(data.friends[0].id);
             contacts.innerHTML = data.friends.map(friend => {
+                let color = 'black';
+                if(friend.id === contact){
+                    color = 'red';
+                }
                 return `
-                    <li id="${friend.id}">
+                    <li id="${friend.id}" stlye="color: ${color}">
                         <p>${friend.username.charAt(0).toUpperCase() + friend.username.slice(1)}</p>
                         <p>${friend.email}</p>
                         <div style="display:flex; justify-content:space-between;">
@@ -130,17 +134,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
                 searchResult.innerHTML += data.data.map(row => {
                     return `
-                        <p>${row.username}</p>
-                        <p>${row.email}</p>
-                        ${!row.contact_status 
-                            ? `<button class="add-friend-btn" data-userid="${row.id}" id="user-${row.id}" >Add Friend</button>` 
-                            : row.contact_status==='pending' 
-                                ? row.request_sender === 'current_user' 
-                                    ? `<button class="cancel-rqst-btn" data-userid="${row.id}" style="color:red;">Cancel Request</button>`
-                                    : `<button class="accept-rqst-btn" data-userid="${row.id}" style="color:blue;">Accept Request</button>`
-                                : `<p style="display:inline-block">Friends ✅</p> | <button class="message-btn" data-userid="${row.id}">Message</button>`
-                        }
-                        <hr>
+                        <div style="padding:1rem;">
+                            <p>${row.username}</p>
+                            <p>${row.email}</p>
+                            ${!row.contact_status 
+                                ? `<button class="add-friend-btn" data-userid="${row.id}" id="user-${row.id}" >Add Friend</button>` 
+                                : row.contact_status==='pending' 
+                                    ? row.request_sender === 'current_user' 
+                                        ? `<button class="cancel-rqst-btn" data-userid="${row.id}" style="color:red;">Cancel Request</button>`
+                                        : `<button class="accept-rqst-btn" data-userid="${row.id}" style="color:blue;">Accept Request</button>`
+                                    : `<p style="display:inline-block">Friends ✅</p> | <button class="message-btn" data-userid="${row.id}">Message</button>`
+                            }
+                            <hr>
+                        </div>
                     `;
                 }).join('');
             }
@@ -376,11 +382,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             
         }
     }
-
-    function message(){
-
-    }
-
 
     /* AUTH RELATED AUTH RELATED AUTH RELATED AUTH RELATED AUTH RELATED AUTH RELATED */
     /* AUTH RELATED AUTH RELATED AUTH RELATED AUTH RELATED AUTH RELATED AUTH RELATED */
