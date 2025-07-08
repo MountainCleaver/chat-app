@@ -61,5 +61,7 @@
         echo json_encode($response);         
         
     }catch(Exception $e){
-
+        http_response_code(500);
+        $response['message'] = $e->getMessage();
+        echo json_encode($response);
     }
