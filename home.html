@@ -6,6 +6,7 @@
     <title>Home</title>
     <link rel="stylesheet" href="styles/home.css">
     <link rel="shortcut icon" href="styles/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 <body>
     <div style="
@@ -27,7 +28,8 @@
         <h1 id="username"></h1>
         <div class="search">
             <input type="text" name="search-field" id="search-field" placeholder="Search for a person">
-            <div id="search-result"></div>
+            <br><br>
+            <div id="search-result" style="border: 1px solid #333;"></div>
         </div>
         <hr>
         <div id="contact-list-container">
@@ -41,7 +43,8 @@
         <h3 id="contact-name"></h3>
         <p id="contact-email"></p>
         <hr>
-        <div class="chat-log" id="chat-log" style="border: 1px solid black; height: 500px; margin-block: 1rem;"></div>
+        <div class="chat-log" id="chat-log"></div>
+        <br>
         <div id="chat-interface" class="div">
             <input style="width: 90%;" type="text" name="chat" id="chat" autofocus>
             <button id="chat-send-btn" type="button">Send</button>
@@ -56,6 +59,7 @@
         <button id="logout-btn" type="button">Logout</button>
     </div>
 
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="script/home/chat_panel.js"></script>
     <script src="script/home/left_panel.js"></script>
     <script src="script/home/right_panel.js"></script>
