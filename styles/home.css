@@ -9,3 +9,33 @@ body {
     border: 1px solid black;
     height: 100vh;
 }
+
+#chat-log {
+    border: 1px solid #000;
+    padding-inline: 1rem;
+    padding-bottom: 1rem;
+    height: 500px;
+    overflow-y: scroll;
+
+    /* display:flex;
+    flex-direction: column;
+    justify-content: flex-end; */
+}
+
+.message{
+    border: 1px solid #26313127;
+    padding: 5px 10px;
+    margin-block: 5px;
+}
+
+.sender {
+    margin-left: auto;
+    width: fit-content;
+    border-radius: 10px 10px 0px 10px ;
+}
+
+.receiver{
+    margin-right: auto;
+    width: fit-content;
+    border-radius: 0px 10px 10px 10px ;
+}
