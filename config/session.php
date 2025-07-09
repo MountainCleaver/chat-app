@@ -32,7 +32,8 @@
             $response['data']    = [
                 'id'       => $_SESSION['user_id'],
                 'email'    => $_SESSION['user_email'],
-                'username' => $_SESSION['user']
+                'username' => $_SESSION['user'],
+                'last_int' => $_SESSION['to_message'] ?? null
             ];
             echo json_encode($response);
         }
