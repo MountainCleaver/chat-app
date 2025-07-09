@@ -1,11 +1,11 @@
 body {
     display: flex;
-    margin: 0; /* Optional: remove default body margin */
+    margin: 0;
 }
 
 .panel {
     padding: 2rem;
-    flex: 1; /* This makes each panel take equal space */
+    flex: 1;
     border: 1px solid black;
     height: 100vh;
 }
@@ -22,10 +22,14 @@ body {
     justify-content: flex-end; */
 }
 
-.message{
+.message {
     border: 1px solid #26313127;
     padding: 5px 10px;
     margin-block: 5px;
+    max-width: 45ch;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
 }
 
 .sender {
@@ -38,4 +42,10 @@ body {
     margin-right: auto;
     width: fit-content;
     border-radius: 0px 10px 10px 10px ;
+}
+
+@media (max-width: 1080px) {
+    .message {
+        max-width: 20ch;
+    }
 }
