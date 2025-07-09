@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
     
-    window.addEventListener('newInteraction', async (e) => {
+    window.addEventListener('newIpersonmmtion', async (e) => {
         console.log('new interaction');
         await getContacts(e.detail.contact);
     });
@@ -44,6 +44,33 @@ document.addEventListener('DOMContentLoaded', async () => {
             
         }catch(e){
             console.error('Error ', e.message);
+        }
+    }
+
+    async function unfriend(unfriend_id){
+        try{
+            const url = 'apis/home/unfriend.php';
+            const res = await fetch(url, {
+                method: 'DELETE',
+                headers: {'Content-Type':'application/json'},
+                credentials: 'include',
+                body: JSON.stringify({
+                    unfriend: unfriend_id
+                })
+            });
+
+            if(!res.ok){
+                throw new Error('Something went wrong when unfriending a contact');
+            }
+
+            const data = await res.json();
+
+            if(data){
+                await getContacts();
+            }
+
+        }catch(e){
+            console.error(`Error: ${e.message}`);
         }
     }
 
@@ -234,7 +261,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             messageLoading = false;
             e.target.textContent = "Message ➡";
         }else if (e.target.classList.contains('unfriend-btn')){
-            console.log(`Unfriend : ${e.target.dataset.userid}`);
+            messageLoading = true;
+            e.target.textContent = "Loading...";
+
+            const targetId = e.target.dataset.userid;
+
+            await unfriend(targetId);
+            messageLoading = false;
+
+            
         }
 
     });
@@ -411,11 +446,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             username.textContent = data.message;
             user_id = Number(data.data.id);
-            console.log(data.data);
+            //console.log('last int',data.data['last_int']);
+            if(data.data['last_int']){
+                toMessageChangedEvent();
+            }else{
+                document.getElementById('contact-name').textContent = `Add a friend and start messaging now!`;
+            }
 
         }catch(e){
             console.error('Error', e.message);
         }
     }
 
-});
+})
