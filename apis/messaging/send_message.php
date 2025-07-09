@@ -55,7 +55,7 @@
             $response['message'] = 'Message sent successfully';
 
             $response['sender'] = $sender;
-            $response['message'] = $message;
+            $response['message'] = $decodedMessage;
             $response['receiver'] = $receiver;
             $response['chatroomID'] = $chatroomID;
         } else {
