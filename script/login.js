@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 error = `<p style="color:green">${data.message}</p>`;
                 errLogin.innerHTML = error;
             }
-            
+    
             window.location.href = 'home.html';
         }catch(e){
             console.error('Error:', e);
