@@ -33,11 +33,7 @@
 
         $current_user = $_SESSION['user_id'];
 
-        if (
-            !isset($contact, $chatroom_id) ||
-            trim($contact) === '' ||
-            trim($chatroom_id) === ''
-        ) {
+        if (!isset($contact, $chatroom_id) ||trim($contact) === '' ||trim($chatroom_id) === '') {
             //http_response_code(400);
             throw new Exception('There are missing data needed for sending messages');
         }
