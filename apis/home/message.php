@@ -47,6 +47,20 @@ try {
     $chatroom_res = $chatroom_stmt->get_result();
     $chatroom = $chatroom_res->fetch_assoc();
 
+    $lastint_sql  = "UPDATE users SET users.last_int_wth = ? WHERE users.id = ?";
+    $lastint_stmt = $conn->prepare($lastint_sql);
+    $lastint_stmt->bind_param('ii', $user_to_message, $current_user);
+
+    if (!$lastint_stmt->execute()) {
+        throw new Exception('Failed to update last interaction.');
+    }
+
+    $updated_rows = $lastint_stmt->affected_rows;
+
+    if ($updated_rows === 0) {
+        $response['note'] = 'No change: last_int_wth was already set to this user.';
+    }
+
     if ($chatroom) {
         $user['chatroom_id'] = $chatroom['id'];
     } else {
@@ -57,6 +71,7 @@ try {
     $response['message'] = 'Target user found.';
     $response['data'] = $user;
     $response['current_user_id'] = $current_user;
+    $response['last_int'] = "{$user_to_message} successfully set as last int with current user {$current_user}";
 
 } catch (Exception $e) {
     $response['message'] = $e->getMessage();
