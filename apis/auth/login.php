@@ -62,6 +62,7 @@
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_email'] = $user['email'];
             $_SESSION['user'] = $user['username'];
+            $_SESSION['to_message'] = $user['last_int_wth'];
             
             $response['status'] = true;
             $response['message'] = 'Login successful.';
