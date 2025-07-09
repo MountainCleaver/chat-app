@@ -100,7 +100,7 @@ chat_interface.addEventListener('keydown', async (e) => {
         await sendMessage(chat_session, cleaned_message);
         
         console.log(`${cleaned_message} sending to ${chat_session['to-message']}`);
-        console.log();
+        //console.log();
         chat_input.value = '';
     }
 
@@ -150,6 +150,7 @@ async function toMessage () {//sets the messaging UI, or : adds username, email,
             }
 
             await fetchMessage(chat_session['opened-chatroom'], chat_session.userID);
+
         }catch(e){
             contact_name.textContent = "Contact Username will appear here";
             contact_email.textContent = "Contact Email will appear here";
@@ -224,6 +225,7 @@ async function fetchMessage(chatroomID, from){
         const data = await res.json();
 
         displayMessages(data.data, from);
+        console.log(`messages`, data);
         
     }catch(e){
         console.error(e);
