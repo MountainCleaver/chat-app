@@ -30,12 +30,24 @@
 
         $chatroom_id = $data['chatroomID'];
         $contact = $data['from'];
+        
 
         $current_user = $_SESSION['user_id'];
 
         if (!isset($contact, $chatroom_id) ||trim($contact) === '' ||trim($chatroom_id) === '') {
             //http_response_code(400);
             throw new Exception('There are missing data needed for sending messages');
+        }
+        
+        if($_SESSION['to_message'] === $contact){// if this user's open chatroom is the target user, and the target user sends this user a message, that message should be 'read'
+            $read_sql = "UPDATE messages 
+                SET read_receipt = 'read' 
+                WHERE chatroom_id = ? 
+                AND sender = ? 
+                AND read_receipt != 'read'";
+            $read_stmt = $conn->prepare($read_sql);
+            $read_stmt->bind_param('ii', $chatroom_id, $contact);
+            $read_stmt->execute();
         }
 
         $sql = "SELECT * FROM messages WHERE chatroom_id = ? ORDER BY timestamp ASC";
