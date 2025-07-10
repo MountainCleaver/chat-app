@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
     
-    window.addEventListener('newIpersonmmtion', async (e) => {
+    window.addEventListener('newInteraction', async (e) => {
         console.log('new interaction');
         await getContacts(e.detail.contact);
     });
@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let isLoading = false;
     let messageLoading = false;
+    let isContactsLoading = false;
 
     await checkSession();
     await getContacts();
@@ -41,6 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const data = await response.json();
 
             toMessageChangedEvent();
+            await getContacts();
             
         }catch(e){
             console.error('Error ', e.message);
@@ -79,7 +81,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.dispatchEvent(event);
     }
 
+    
     async function getContacts (contact) {
+        if(isContactsLoading){
+            return;
+        }
+        isContactsLoading = true;
         
         try{
             const url = "apis/home/contacts.php";
@@ -91,29 +98,31 @@ document.addEventListener('DOMContentLoaded', async () => {
             const data = await response.json();
 
             console.log(data);
+/*             if(){
+                
+            } */
             //await messageContact(data.friends[0].id);
             contacts.innerHTML = data.friends.map(friend => {
                 let color = 'black';
-                if(friend.id === contact){
-                    color = 'red';
-                }
                 return `
-                    <li id="${friend.id}" stlye="color: ${color}">
-                        <p>${friend.username.charAt(0).toUpperCase() + friend.username.slice(1)}</p>
+                    <li id="${friend.id}">
+                        <p class="${friend.read_receipt === 'unread' ? 'unread' : 'read'}">${friend.username.charAt(0).toUpperCase() + friend.username.slice(1)}</p>
                         <p>${friend.email}</p>
                         <div style="display:flex; justify-content:space-between;">
                             <button class="unfriend-btn" data-userid="${friend.id}" style="font-size:0.7rem;">Unfriend ❌</button>
                             <button class="message-btn" data-userid="${friend.id}" data-username="${friend.username}">Message ➡</button>
                         </div>
                         <hr>
+
                     </li>
                 `;
 }).join('');
-
+        
         }catch(e){
             console.log('Error: ', e.message);
             contacts.innerHTML = `<p>There was an error fetching your friends</p>`;
         }
+        isContactsLoading = false;
     }
 
 
@@ -159,7 +168,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 searchResult.innerHTML = `<p>${data.message}</p>`;
                 return;
             } else {
-                searchResult.innerHTML += data.data.map(row => {
+                searchResult.innerHTML = data.data.map(row => {
                     return `
                         <div style="padding:1rem;">
                             <p>${row.username}</p>
