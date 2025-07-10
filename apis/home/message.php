@@ -47,6 +47,7 @@ try {
     $chatroom_res = $chatroom_stmt->get_result();
     $chatroom = $chatroom_res->fetch_assoc();
 
+    //set this user as the last interaced contact by the current user
     $lastint_sql  = "UPDATE users SET users.last_int_wth = ? WHERE users.id = ?";
     $lastint_stmt = $conn->prepare($lastint_sql);
     $lastint_stmt->bind_param('ii', $user_to_message, $current_user);
@@ -63,6 +64,17 @@ try {
 
     if ($chatroom) {
         $user['chatroom_id'] = $chatroom['id'];
+
+        //update read_receipt -> 'read' in the messages table where 'sender' = other user, also update all messages before that that still matches who sent it
+        $read_sql = "UPDATE messages 
+            SET read_receipt = 'read' 
+            WHERE chatroom_id = ? 
+            AND sender = ? 
+            AND read_receipt != 'read'";
+        $read_stmt = $conn->prepare($read_sql);
+        $read_stmt->bind_param('ii', $chatroom['id'], $user_to_message);
+        $read_stmt->execute();
+
     } else {
         $user['chatroom_id'] = null;
     }
