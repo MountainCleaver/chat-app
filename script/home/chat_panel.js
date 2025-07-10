@@ -68,7 +68,7 @@ websocket.addEventListener('message', async (e) => {
                         }
                     }).showToast();
 
-newInteractionEvent(data.from);
+                    newInteractionEvent(data.from);
 
                 }
                 break;
@@ -242,7 +242,8 @@ async function fetchNewMessage(chatroomID, from){
             headers    : {'Content-Type':'application/json'},
             credentials: 'include',
             body :JSON.stringify({
-                chatroomID: chatroomID
+                chatroomID: chatroomID,
+                targetuserID: from
             })
         });
 
@@ -300,7 +301,7 @@ function displayMessages(arr, from){
     }else{
         chat_space.innerHTML = arr.map((e) => {
             return`
-                <div class="${e.sender === from ? 'sender' : 'receiver'} message">${e.message}</div>
+                <div class="${e.sender === from ? 'sender' : 'receiver'} message message_${e['read_receipt']}">${e.message}</div>
             `
         }).join('');
         chat_space.scrollTop = chat_space.scrollHeight;
@@ -320,6 +321,12 @@ function appendNewMessage(message, from) {
         newMessage.classList.add('receiver');
     } else {
         newMessage.classList.add('sender');
+    }
+
+    if (message['read_receipt'] === 'unread') {
+        newMessage.classList.add('message_unread');
+    } else {
+        newMessage.classList.add('message_read');
     }
 
     // Append to chat space
