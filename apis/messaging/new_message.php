@@ -29,6 +29,7 @@
         $data = json_decode(file_get_contents("php://input"), true);
 
         $chatroom_id = $data['chatroomID'];
+        $target_user_id = $data['targetuserID'];
 
         $current_user = $_SESSION['user_id'];
 
@@ -36,6 +37,17 @@
             !isset($chatroom_id) || trim($chatroom_id) === '') {
             //http_response_code(400);
             throw new Exception('There are missing data needed for sending messages');
+        }
+
+        if($_SESSION['to_message'] === $target_user_id){
+            $read_sql = "UPDATE messages 
+                SET read_receipt = 'read' 
+                WHERE chatroom_id = ? 
+                AND sender = ? 
+                AND read_receipt != 'read'";
+            $read_stmt = $conn->prepare($read_sql);
+            $read_stmt->bind_param('ii', $chatroom_id, $target_user_id);
+            $read_stmt->execute();
         }
 
         $sql = "SELECT * FROM messages WHERE chatroom_id = ? ORDER BY timestamp DESC LIMIT 1";
