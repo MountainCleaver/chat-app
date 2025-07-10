@@ -13,7 +13,8 @@
     $response = [   
         'status' => false,
         'message' => '',
-        'data' => null
+        'data' => null,
+        'has_unread_message' => false
     ];
 
     if(!$conn){
@@ -219,56 +220,97 @@ function acceptRequest($conn){
     }
 }
 
-function getFriends($conn){
-
+function getFriends($conn)
+{
     global $response;
 
-    try{
+    try {
         if (!isset($_SESSION['user_id'])) {
             throw new Exception('User not authenticated.');
-        }   
+        }
+
         $current_user_id = $_SESSION['user_id']; // Current logged-in user
 
-        $sql = "SELECT 
-                u.id,
-                u.username,
-                u.email,
-                cr.last_interaction
-            FROM contact_rels cr
-            JOIN users u 
-            ON u.id = CASE 
-                            WHEN cr.user_id = ? THEN cr.contact_id
-                            ELSE cr.user_id 
-                        END
-            WHERE cr.status = 'accepted'
-            AND (? IN (cr.user_id, cr.contact_id))
-            ORDER BY cr.last_interaction DESC;";
+        $sql = "WITH latest_messages AS (
+                    SELECT *
+                    FROM (
+                        SELECT 
+                            m.*,
+                            ROW_NUMBER() OVER (PARTITION BY m.chatroom_id ORDER BY m.timestamp DESC) AS rn
+                        FROM messages m
+                    ) ranked
+                    WHERE rn = 1
+                )
+
+                SELECT 
+                    u.id,
+                    u.username,
+                    u.email,
+                    cr.last_interaction,
+                    cr.id AS chatroom_id,
+                    CASE 
+                        WHEN lm.receiver = ? THEN lm.read_receipt
+                        ELSE 'read'
+                    END AS read_receipt
+                FROM contact_rels cr
+                JOIN users u 
+                    ON u.id = CASE 
+                                WHEN cr.user_id = ? THEN cr.contact_id
+                                ELSE cr.user_id 
+                            END
+                LEFT JOIN latest_messages lm ON lm.chatroom_id = cr.id
+                WHERE cr.status = 'accepted'
+                AND (? IN (cr.user_id, cr.contact_id))
+                ORDER BY cr.last_interaction DESC;";
+
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('ii', $current_user_id, $current_user_id);
         if (!$stmt) {
             throw new Exception('SQL prepare failed: ' . $conn->error);
         }
+
+        $stmt->bind_param('iii', $current_user_id, $current_user_id, $current_user_id);
         $stmt->execute();
         $result = $stmt->get_result();
+
+        $response['friends'] = [];
 
         if ($result && $result->num_rows > 0) {
             $response['status'] = true;
             $response['message'] = 'List of friends available';
-            
+
+            $to_message_found = false;
+            $replacement_candidate = null;
+
             while ($friend = $result->fetch_assoc()) {
+                if (isset($_SESSION['to_message']) && $_SESSION['to_message'] == $friend['id']) {
+                    $to_message_found = true;
+                }
+
+                if ($friend['read_receipt'] === 'read' && $replacement_candidate === null) {
+                    $replacement_candidate = $friend['id'];
+                }
+
                 $response['friends'][] = $friend;
+            }
+
+            if ($to_message_found && isset($_SESSION['to_message'])) {
+                foreach ($response['friends'] as $f) {
+                    if ($f['id'] == $_SESSION['to_message'] && $f['read_receipt'] === 'unread') {
+                        $_SESSION['to_message'] = $replacement_candidate ?? null;
+                        break;
+                    }
+                }
             }
 
         } else {
             $response['status'] = true;
             $response['message'] = 'No friends found';
-            $response['friends'] = [];
-}
+        }
+
         echo json_encode($response);
-    }catch(Exception $e){
+    } catch (Exception $e) {
         http_response_code(500);
         $response['message'] = 'Server error: ' . $e->getMessage();
         echo json_encode($response);
     }
-    
 }
