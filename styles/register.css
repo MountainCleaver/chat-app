@@ -1,0 +1,101 @@
+:root {
+    --color-bg: #141204;
+    --color-light-text: rgb(252, 239, 239);
+    --color-accent: #e8985e;
+    --color-border: #1412046c;
+    --color-link: rgb(207, 218, 143);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100vh;
+    background: var(--color-bg);
+    font-family: Arial, Helvetica, sans-serif;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-text-p {
+    color: var(--color-light-text);
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+}
+
+.form {
+    margin-inline: auto;
+    border: 1px solid var(--color-light-text);
+    border-radius: 6px;
+    padding: 3rem;
+}
+
+fieldset {
+    border: none;
+}
+
+legend {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: var(--color-light-text);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5rem;
+}
+
+input {
+    height: 2rem;
+    padding: 17px 2rem;
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+button {
+    font-size: 1.2rem;
+    height: 2rem;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--color-accent);
+    margin-bottom: 2rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: #fa9c75; /* Slightly lighter accent on hover */
+    cursor: pointer;
+}
+
+button:active {
+    transform: scale(0.98); /* Slight press-in effect */
+}
+
+.error {
+    font-size: 0.8rem;
+    height: 1rem;
+    margin-bottom: 2px;
+}
+
+.ankor {
+    font-size: 1.2rem;
+    color: var(--color-link);
+    transition: color 0.3s ease;
+    text-decoration: none;
+}
+
+.ankor:hover {
+    text-decoration: underline;
+}
+
+.ankor:active {
+    color: #c0d17a; /* Slightly darker shade for active state */
+}

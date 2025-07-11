@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
 
     loginBtn.addEventListener('click', async () => {
+        
 
         if(!validateFields()){
             errLogin.innerHTML = error;
@@ -85,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     async function login(creds){
+        loginBtn.textContent = 'Loading...';
         try{
             const url = 'apis/auth/login.php';
 
@@ -114,6 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
             error = `<p style="color: red; display:inline;">${e.message}</p>`;
             errLogin.innerHTML = error;
         }
+        loginBtn.textContent = 'Login';
     }
 
     function validateFields(){

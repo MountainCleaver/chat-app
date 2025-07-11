@@ -1,0 +1,112 @@
+:root {
+    --color-bg: #141204;
+    --color-light-text: rgb(252, 239, 239);
+    --color-accent: #e8985e;
+    --color-border: #1412046c;
+    --color-link: rgb(207, 218, 143);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100vh;
+    background: var(--color-bg);
+    font-family: Arial, Helvetica, sans-serif;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-text-container, .form {
+    margin-right: auto;
+    margin-left: 15vw;
+}
+
+.welcome-text {
+    font-size: 4.4rem;
+    color: var(--color-light-text);
+}
+
+.welcome-text-p {
+    font-size: 2rem;
+    color: var(--color-accent);
+}
+
+.form {
+    margin-left: auto;
+    margin-right: 15vw;
+    border: 1px solid var(--color-light-text);
+    border-radius: 6px;
+    padding: 3rem;
+}
+
+fieldset {
+    border: none;
+}
+
+legend {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: var(--color-light-text);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+}
+
+input {
+    height: 2rem;
+    padding: 17px 2rem;
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+button {
+    font-size: 1.2rem;
+    height: 2rem;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+button:hover {
+    background-color: #f3a66c; /* lighter shade of accent */
+}
+
+button:active {
+    background-color: #d47c3f; /* darker shade of accent */
+    transform: scale(0.97);
+}
+
+#error-login {
+    font-size: 0.8rem;
+    height: 1rem;
+}
+
+.ankor {
+    font-size: 1.2rem;
+    color: var(--color-link);
+    transition: color 0.3s ease;
+}
+
+.ankor:hover {
+    text-decoration: underline;
+    color: var(--color-link);
+}
+
+.ankor:active {
+    color: #c0d17a; /* A slightly darker shade for the active state */
+}
+

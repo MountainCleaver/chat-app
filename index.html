@@ -4,26 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="styles/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="styles/login.css">
     <title>Login</title>
 </head>
 <body>
-    <h1>Welcome to my Chat App</h1>
-    <p>This is a simple chat application built with PHP and MySQL.</p>
 
-    <fieldset>
-        <legend>Login</legend>
-        <form id="login-form">
-            <input type="email" id="email" name="email" placeholder="Email">&nbsp;&nbsp;
-            <input type="password" id="password" name="password" placeholder="Password">
-            <button id="login-btn" type="button">Login</button>
-        </form>
-        <br>
-        <div id="error-login">
+    <div class="welcome-text-container">
+        <h1 class="welcome-text">Welcome to my Chat App</h1>
+        <p class="welcome-text-p">This is a simple chat application built with PHP, NodeJS, and MySQL.</p>
+    </div>
 
-        </div>
-        <br>
-        <a href="signup.html">Sign Up</a>
-    </fieldset>
+    <div class="form">
+        <fieldset>
+            <legend>Login</legend>
+            <form id="login-form">
+                <input type="email" id="email" name="email" placeholder="Email">
+                <input type="password" id="password" name="password" placeholder="Password">
+                <button id="login-btn" type="button">Login</button>
+            </form>
+            <br>
+            <div id="error-login">
+                
+            </div>
+            <br>
+            <a class="ankor" href="signup.html">Sign Up ➡</a>
+        </fieldset>
+    </div>
+
     <script src="script\login.js"></script>
 </body>
 </html>

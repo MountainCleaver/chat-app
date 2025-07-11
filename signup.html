@@ -4,27 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="styles/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="styles/register.css">
     <title>Sign Up</title>
 </head>
 <body>
-    <h1>Welcome to my Chat App</h1>
-    <p>This is a simple chat application built with PHP and MySQL.</p>
 
-    <fieldset>
-        <legend>Signup</legend>
-        <form id="reg-form">
-            <input type="text" id="username" name="username" placeholder="Username" required>
-                <span id="error-username"></span><br><br>
-            <input type="email" id="email" name="email" placeholder="Email" required>
-                <span id="error-email"></span><br><br>
-            <input type="password" id="password" name="password" placeholder="Password" required>
-                <span id="error-password"></span><br><br>
-            <input type="password" id="c-password" name="c-password" placeholder="Confirm Password" required minlength="8">
-                <span id="error-c-password"></span><br><br>
-            <button id="sign-up-btn" type="submit">Sign Up</button><br><br>
-        </form>
-        <a href="index.html">Login</a>
-    </fieldset>
+    <p class="welcome-text-p">Register in this simple chat app made with PHP, NodeJS, and MySQL</p>
+
+    <div class="form">
+        <fieldset>
+            <legend>Signup</legend>
+            <form id="reg-form">
+                <input type="text" id="username" name="username" placeholder="Username" required>
+                    <span class="error" id="error-username"></span>
+                <input type="email" id="email" name="email" placeholder="Email" required>
+                    <span class="error" id="error-email"></span>
+                <input type="password" id="password" name="password" placeholder="Password" required>
+                    <span class="error" id="error-password"></span>
+                <input type="password" id="c-password" name="c-password" placeholder="Confirm Password" required minlength="8">
+                    <span class="error" id="error-c-password"></span>
+                <button id="sign-up-btn" type="submit">Sign Up</button>
+            </form>
+            <a class="ankor" href="index.html">Login</a>
+        </fieldset>
+    </div>
     <script src="script\register.js"></script>
 </body>
 </html>
