@@ -1,34 +1,170 @@
-body {
-    display: flex;
-    margin: 0;
+:root {
+    --color-bg: #141204;
+    --color-light-text: rgb(252, 239, 239);
+    --color-accent: #e8985e;
+    --color-border: #1412046c;
+    --color-link: rgb(207, 218, 143);
 }
 
+/* === General Reset === */
+body, html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* === Layout === */
+body {
+    display: flex;
+    background-color: var(--color-bg);
+    color: var(--color-light-text);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* === Panel Styling === */
 .panel {
     padding: 2rem;
     flex: 1;
-    border: 1px solid black;
-    height: 100vh;
+    border-right: 1px solid #423b32;
+    height: 92vh;
 }
 
+.contacts{
+    padding: 1rem;
+    background: none;
+    flex: 0.7;
+}
+
+#contact-list-container {
+    height: 80%;
+    overflow-y: scroll;
+}
+#contact-list-container::-webkit-scrollbar{
+    background-color: #423b32;
+    width: 5px;
+    border-radius: 5px;
+    margin-left: 1rem;
+}
+#contact-list-container::-webkit-scrollbar-thumb{
+    background-color: var(--color-accent);
+}
+
+/* === Top Status Bar === */
+#online-status {
+    width: 100vw;
+    z-index: 999;
+    background-color: gray;
+    height: fit-content;
+    position: fixed;
+    top: 0;
+    margin-top: auto;
+    display: inline;
+    color: aliceblue;
+    text-align: center;
+}
+
+#search-field{
+    padding: 10px 1rem;
+    border-radius: 15px;
+    border: none;
+    background-color: #473219;
+    color: var(--color-light-text);
+    width: 80%;
+    font-size: 1.05rem;
+}
+#search-field:focus{
+    outline: none;
+}
+
+#search-field::placeholder{
+    color: aliceblue;
+    opacity: 80%;
+}
+
+/* === Contact List & Search === */
+#contacts-list {
+    list-style: none;
+    padding: 0;
+}
+
+#search-result {
+    border: 1px solid #333;
+    margin-bottom: 15px;
+}
+
+/* === friend container */
+.friend-name{
+    font-size: 1rem;
+    margin-bottom: -8px;
+}
+.friend-email{
+    font-size: .8rem;
+    margin-bottom: -8px;
+}
+
+/* === Chat Log Area === */
+
+.chat-header {
+    border-bottom: 2px solid var(--color-link);
+    margin-bottom: 15px;
+}
 #chat-log {
-    border: 1px solid #000;
+    border-radius: 5px;
+    background-color: #241f19;
     padding-inline: 1rem;
     padding-bottom: 1rem;
-    height: 500px;
+    height: 70%;
     overflow-y: scroll;
-
-    /* display:flex;
-    flex-direction: column;
-    justify-content: flex-end; */
 }
 
-.unread {
-    background-color: green;
+#chat-log::-webkit-scrollbar{
+    background-color: #352f27;
+    width: 5px;
+    border-radius: 0 5px 5px 0;
+    margin-left: 1rem;
 }
-.read {
-    font-weight: normal;
+#chat-log::-webkit-scrollbar-thumb{
+    background-color: var(--color-accent);
+    border-radius: 0 5px 5px 0;
 }
 
+/* === Chat Input Interface === */
+#chat-interface {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+#chat-interface input {
+    width: 90%;
+    height: 2rem;
+    padding: 2px 1rem;
+    border-radius: 5px;
+    border: none;
+    background-color: #473219;
+    color: var(--color-light-text);
+}
+#chat-interface input:focus {
+    outline: none;
+}
+#chat-interface button {
+    width: 10%;
+    background-color: var(--color-accent);
+    border: none;
+    border-radius: 5px;
+    color: var(--color-bg);
+}
+
+#chat-interface button:hover {
+    background-color: #c07d4e;
+}
+#chat-interface button:active {
+    background-color: #754d30;
+}
+
+/* === Message Styles === */
 .message {
     border: 1px solid #26313127;
     padding: 5px 10px;
@@ -37,20 +173,84 @@ body {
     word-wrap: break-word;
     overflow-wrap: break-word;
     white-space: normal;
+    color: var(--color-bg);
+    font-size: 0.9rem;
 }
 
 .sender {
     margin-left: auto;
     width: fit-content;
-    border-radius: 10px 10px 0px 10px ;
+    border-radius: 10px 10px 0px 10px;
+    background-color: var(--color-accent);
 }
 
-.receiver{
+.receiver {
     margin-right: auto;
     width: fit-content;
-    border-radius: 0px 10px 10px 10px ;
+    border-radius: 0px 10px 10px 10px;
+    background-color: var(--color-link);
 }
 
+/* === Read / Unread States === */
+.friend-container {
+    padding: 10px 1rem 15px;
+    border-bottom: 1px solid #363109;
+    margin-right: 1rem;
+    border-radius: .5rem;
+    font-weight: 700;
+}
+
+.message-btn {
+    background-color: var(--color-link);
+    border: none;
+    border-radius: 2px;
+    padding: 5px 10px;
+    color: var(--color-bg);
+}
+.unfriend-btn {
+    color: var(--color-light-text);
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-link);
+    border-radius: 2px;
+    padding: 5px 10px;
+}
+
+.friend-container-unread {
+    background-color: #252209;
+}
+.friend-container-unread .unfriend-btn {
+    color: var(--color-light-text);
+    background-color: #252209;
+    border: 1px solid var(--color-link);
+    border-radius: 2px;
+    padding: 5px 10px;
+}
+
+.friend-container-read {
+    font-weight: normal;
+}
+
+/* RIGHT */
+
+.right {
+    flex: 0.5;
+}
+
+.right-panel-title{
+    font-size: larger;
+    padding-bottom: 3.2rem;
+    border-bottom: 1px solid var(--color-link);
+}
+
+#logout-btn {
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-accent);
+    padding: 5px 2rem;
+    color: var(--color-light-text);
+    border-radius: 5px;
+}
+
+/* === Responsive Styling === */
 @media (max-width: 1080px) {
     .message {
         max-width: 20ch;

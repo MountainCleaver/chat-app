@@ -25,25 +25,29 @@ body {
 
 .welcome-text-container, .form {
     margin-right: auto;
-    margin-left: 15vw;
+    margin-left: 20vw;
 }
 
 .welcome-text {
     font-size: 4.4rem;
     color: var(--color-light-text);
+    width: 16ch;
+    margin-bottom: 1rem;
 }
 
 .welcome-text-p {
     font-size: 2rem;
     color: var(--color-accent);
+    width: 40ch;
 }
 
 .form {
     margin-left: auto;
-    margin-right: 15vw;
+    margin-right: 25vw;
     border: 1px solid var(--color-light-text);
     border-radius: 6px;
     padding: 3rem;
+    background-color: rgba(250, 236, 236, 0.048);
 }
 
 fieldset {
@@ -109,4 +113,3 @@ button:active {
 .ankor:active {
     color: #c0d17a; /* A slightly darker shade for the active state */
 }
-

@@ -106,6 +106,23 @@ chat_interface.addEventListener('keydown', async (e) => {
 
 });
 
+chat_send.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const cleaned_message = sanitizeMessage(chat_input.value);
+    console.log(chat_session);
+
+    if (!can_message || websocket.readyState !== WebSocket.OPEN || !cleaned_message){
+        alert('Not yet ready to send message');
+        return;
+    }
+
+    await sendMessage(chat_session, cleaned_message);
+    
+    console.log(`${cleaned_message} sending to ${chat_session['to-message']}`);
+    //console.log();
+    chat_input.value = '';
+});
+
 /* SENDING AND GETTING MESSAGE SENDING AND GETTING MESSAGE SENDING AND GETTING MESSAGE SENDING AND GETTING MESSAGE */
 /* SENDING AND GETTING MESSAGE SENDING AND GETTING MESSAGE SENDING AND GETTING MESSAGE SENDING AND GETTING MESSAGE */
 /* SENDING AND GETTING MESSAGE SENDING AND GETTING MESSAGE SENDING AND GETTING MESSAGE SENDING AND GETTING MESSAGE */
@@ -301,13 +318,12 @@ function displayMessages(arr, from){
     }else{
         chat_space.innerHTML = arr.map((e) => {
             return`
-                <div class="${e.sender === from ? 'sender' : 'receiver'} message message_${e['read_receipt']}">${e.message}</div>
+                <div class="${e.sender === from ? 'sender' : 'receiver'} message message_${e['read_receipt']}" title="${e.timestamp}">${e.message}</div>
             `
         }).join('');
         chat_space.scrollTop = chat_space.scrollHeight;
     }
 }
-
 
 function appendNewMessage(message, from) {
     const newMessage = document.createElement('div');
@@ -323,16 +339,21 @@ function appendNewMessage(message, from) {
         newMessage.classList.add('sender');
     }
 
+    // Add read/unread class
     if (message['read_receipt'] === 'unread') {
         newMessage.classList.add('message_unread');
     } else {
         newMessage.classList.add('message_read');
     }
 
+    // Add title (shows timestamp as tooltip)
+    newMessage.title = message.timestamp;
+
     // Append to chat space
     chat_space.appendChild(newMessage);
     chat_space.scrollTop = chat_space.scrollHeight;
 }
+
 
 
 function newInteractionEvent(id = '') {

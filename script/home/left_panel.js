@@ -105,15 +105,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             contacts.innerHTML = data.friends.map(friend => {
                 let color = 'black';
                 return `
-                    <li id="${friend.id}">
-                        <p class="${friend.read_receipt === 'unread' ? 'unread' : 'read'}">${friend.username.charAt(0).toUpperCase() + friend.username.slice(1)}</p>
-                        <p>${friend.email}</p>
+                    <li class="friend-container friend-container-${friend.read_receipt === 'unread' ? 'unread' : 'read'}" id="${friend.id}">
+                        <p class="friend-name">${friend.username.charAt(0).toUpperCase() + friend.username.slice(1)}</p>
+                        <p class="friend-email">${friend.email}</p>
+                        <br>
                         <div style="display:flex; justify-content:space-between;">
-                            <button class="unfriend-btn" data-userid="${friend.id}" style="font-size:0.7rem;">Unfriend ❌</button>
-                            <button class="message-btn" data-userid="${friend.id}" data-username="${friend.username}">Message ➡</button>
+                            <button class="friend-btn unfriend-btn" data-userid="${friend.id}" style="font-size:0.7rem;">Unfriend ❌</button>
+                            <button class="friend-btn message-btn" data-userid="${friend.id}" data-username="${friend.username}">Message ➡</button>
                         </div>
-                        <hr>
-
                     </li>
                 `;
 }).join('');
