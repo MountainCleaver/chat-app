@@ -53,7 +53,7 @@
         if($stmt->affected_rows > 0){
             $response['status'] = true;
             $response['message'] = 'Message sent successfully';
-
+            $response['timestamp'] = date('Y-m-d H:i:s'); // MySQL DATETIME format
             $response['sender'] = $sender;
             $response['message'] = $decodedMessage;
             $response['receiver'] = $receiver;
